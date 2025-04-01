@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  php:
+    image: php:8.2-fpm
+    container_name: php-sample-application-php
+    volumes:
+      - ./.web:/var/www/html  # Se mapea .web a /var/www/html
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=db
+      - DB_NAME=sample
+      - DB_USER=sampleuser
+      - DB_PASSWORD=samplepass
+    expose:
+      - "9000"  # PHP-FPM estará escuchando en este puerto dentro de la red
+
+  nginx:
+    image: nginx:latest
+    container_name: php-sample-application-nginx
+    ports:
+      - "8080:80"  # Puertos mapeados para Nginx
+    volumes:
+    - ./nginx/default.conf:/etc/nginx/default.conf
+    - ./nginx/fastcgi-php.conf:/etc/nginx/fastcgi-php.conf
+    - ./.web:/var/www/html  # Asegúrate que .web existe y tiene tu código
+
+
+    networks:
+      - app-network
+    depends_on:
+      - php
+      - db
+
+  db:
+    image: mysql:8
+    container_name: php-sample-application-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: sample
+      MYSQL_USER: sampleuser
+      MYSQL_PASSWORD: samplepass
+    volumes:
+      - mysql-data:/var/lib/mysql  # Datos persistentes de MySQL
+    networks:
+      - app-network
+    expose:
+      - "3306"  # Expone el puerto MySQL a la red interna
+
+networks:
+  app-network:
+    driver: bridge  # Red personalizada para que los contenedores se comuniquen entre sí
+
+volumes:
+  mysql-data:  # Volumen para persistir datos de la base de datos
+
+
+
+
+
+
+
+
