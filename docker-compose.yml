@@ -24,7 +24,7 @@ services:
     volumes:
     - ./nginx/default.conf:/etc/nginx/default.conf
     - ./nginx/fastcgi-php.conf:/etc/nginx/fastcgi-php.conf
-    - ./.web:/var/www/html  # Asegúrate que .web existe y tiene tu código
+    - ./web:/var/www/html  # Asegúrate que .web existe y tiene tu código
 
 
     networks:
